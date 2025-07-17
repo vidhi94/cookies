@@ -1,3 +1,4 @@
+const { mailer } = require("../helper/mail");
 const user = require("../models/user.schema")
 
 const home = async (req, res) =>{
@@ -54,4 +55,37 @@ const Login = (req, res) =>{
     return res.render("login")
 }
 
-module.exports = {home, signup, update, remove, getsignup, getLogin, Local, Login}
+let OTP;
+const passportReset = (req, res) => {
+    OTP = Math.floor(Math.random()* 100000)
+    let mail = mailer()
+
+    let mailOptions = {
+        from : "ghadiyavidhi607@gmail.com",
+        to : req.body.email,
+        subject : "Password Reset",
+        text: OTP.toString()
+    }
+
+    mail.sendMail(mailOptions, (err, info)=>{
+        if (err) {
+            console.log(err);
+        }
+        else{
+            console.log(info);
+        }
+    })
+    res.send("OTP Sent Succesfully...")
+}
+
+const verify = (req, res) =>{
+    let token = req.body.OTP
+    if (token == OTP) {
+        res.send("Verifyed OTP");
+    }
+    else{
+        res.send("WRONG OTP")
+    }
+}
+
+module.exports = {home, signup, update, remove, getsignup, getLogin, Local, Login, passportReset, verify}

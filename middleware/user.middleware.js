@@ -19,7 +19,7 @@ const isAuth = (req, res, next) =>{
         next();
     }
     else{
-        res.render("/signup")
+        res.render("signup")
     }
 }  
 

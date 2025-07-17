@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+
+        h1 {
+            text-decoration: underline;
+        }
+
+        #container {
+
+            border: 5px solid green;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            padding: 30px;
+        }
+
+        #container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            width: 200px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: green;
+            color: white;
+        }
+
+        #parent
+        {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="container">
+        <h1>Product Form</h1>
+        <form id="form">
+            <input id="title" type="text" placeholder="Enter the title" name="title">
+
+            <input id="price" type="number" placeholder="Enter the price" name="price">
+
+            <input id="description" type="text" placeholder="Enter the description" name="description">
+
+            <input id="image" type="url" placeholder="Enter the image" name="img">
+
+            <button type="submit" id="button">submit</button>
+        </form>
+
+        <div id="parent">
+
+        </div>
+    </div>
+</body>
+<script>
+
+     let add = (product) =>{
+      fetch("/product/create",{
+        method : "POST",
+        headers : {"Content-Type" : "application/json"},
+        body : JSON.stringify(product)
+      })
+      .then(()=>{
+        get()
+      })
+     }
+
+     let update = (product) => {
+        fetch(`/product/update/${id}`,{
+            method : "PATCH",
+            headers : {"Content-Type" : "application/json"},
+            body : JSON.stringify(product)
+        })
+        .then(()=>{
+            get()
+        })
+    }
+
+      document.getElementById("form").addEventListener("submit", (e)=>{
+        e.preventDefault()
+
+      let product = {
+        title : document.getElementById("title").value,
+        price : document.getElementById("price").value,
+        description : document.getElementById("description").value,
+        img : document.getElementById("image").value
+      }
+
+      let button = document.getElementById("button").innerText === "submit";
+
+      if (button) {
+        add(product)
+      }
+      else{
+        update(product)
+      }
+
+      get()
+
+      })
+
+    //   update
+    const handleUpdate = (data) =>{
+      document.getElementById("title").value = data.title;
+      document.getElementById("price").value = data.price;
+      document.getElementById("description").value = data.description;
+      document.getElementById("image").value = data.img;
+
+      document.getElementById("button").innerText = "update"
+
+      id = data._id
+        // console.log(id);
+    }
+
+    const handleDelete = (id) =>{
+      //  console.log(id)
+      fetch(`product/delete/${id}`,{
+        method : "DELETE"
+      })
+      .then(()=>{
+        get()
+      })
+      .catch(()=>{
+        
+      })
+    }
+
+
+
+      let uimaker = (res) =>{
+          let parent = document.getElementById("parent")
+          parent.innerHTML = ""
+
+          res.map((data)=>{
+            let div = document.createElement("div");
+
+            let title = document.createElement("h2");
+            title.innerText = data.title
+
+            let price = document.createElement("h3");
+            price.innerText = data.price
+
+            let desc = document.createElement("p");
+            desc.innerText = data.description
+
+            let image = document.createElement("img");
+            image.src = data.img
+            image.style.width = "200px";
+
+            let btn1 = document.createElement("button")
+            btn1.innerHTML = "update"
+
+            btn1.addEventListener("click",()=>{handleUpdate(data)})
+
+            let btn2 = document.createElement("button")
+            btn2.innerHTML = "delete"
+
+            btn2.addEventListener("click",()=>{handleDelete(data._id)})
+
+            div.append(title, price, desc, image, btn1, btn2)
+            div.style.border = "2px solid red";
+            div.style.margin = "10px";
+            div.style.padding = "20px";
+            parent.append(div)
+          })
+
+
+        }
+
+        let get = async () =>{
+          const req = await fetch("/product/products")
+          const res = await req.json()
+          uimaker(res)
+        }
+
+        get()
+        
+</script> 
+</html>

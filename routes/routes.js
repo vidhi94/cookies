@@ -1,5 +1,5 @@
 const {Router} = require("express")
-const {home, signup, update, remove, getsignup, getLogin, Login, Local} = require("../controllers/user.controller")
+const {home, signup, update, remove, getsignup, getLogin, Login, Local, passportReset, verify} = require("../controllers/user.controller")
 const {valid, isAuth} = require("../middleware/user.middleware")
 const passport = require("passport")
 
@@ -20,5 +20,8 @@ router.get("/login", Login)
 router.get("/index", (req, res)=>{
     return res.render("index")
 })
+
+router.post("/forgot",passportReset)
+router.post("/verify", verify)
 
 module.exports = {router}

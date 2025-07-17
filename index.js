@@ -6,6 +6,7 @@ const passport = require("passport")
 const session = require("express-session")
 const {PassportAuth} = require("./middleware/PassportAuth")
 const { getsignup } = require("./controllers/user.controller")
+const {pRouter} = require("./routes/pRouter")
 PassportAuth(passport)
 
 const port = 7005
@@ -30,9 +31,8 @@ app.get("/index",(req, res)=>{
 
 app.get("/signup", getsignup)
 
-
 app.use(router)
-
+app.use("/product",pRouter);
 app.listen(port, (err)=>{
     if (err) {
         console.log(("Server is not connected"));
