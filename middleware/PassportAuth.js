@@ -26,3 +26,4 @@ let PassportAuth = (passport) =>{
 }
 
 module.exports = { PassportAuth };
+
